@@ -13,7 +13,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-class ToDoList(Base):
+class ToDoListTable(Base):
     __tablename__ = "ToDoList"
     id = Column(Integer, primary_key=True)
     title = Column(String)
