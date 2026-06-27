@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from database import SessionLocal, ToDoListTable
 
-from todos import ToDosCreate
+from todos import ToDosSchema
 
 app = FastAPI()
 
@@ -37,7 +37,18 @@ def search_todos(db: db_dependency,
         return "No such todos"
 
 @app.post("/createTodos")
-def create_todos(db: db_dependency, new_todo: ToDosCreate):
+def create_todos(db: db_dependency, new_todo: ToDosSchema):
     new_todo = ToDoListTable(**new_todo.model_dump())
     db.add(new_todo)
     db.commit()
+
+@app.put("/updateTodos")
+def update_todos(db: db_dependency, todo_id: int, update_todo: ToDosSchema):
+    record_to_update = db.query(ToDoListTable).get(todo_id)
+    if record_to_update is not None:
+        record_to_update.priority = update_todo.priority
+        record_to_update.title = update_todo.title
+        record_to_update.description = update_todo.description
+        record_to_update.is_completed = update_todo.is_completed
+        db.add(record_to_update)
+        db.commit()
