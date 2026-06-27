@@ -18,5 +18,5 @@ class ToDoList(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    property = Column(Integer)
-    completed = Column(Boolean, default=False)
+    priority = Column(Integer)
+    is_completed = Column(Boolean, default=False)
