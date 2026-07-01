@@ -1,25 +1,16 @@
-from fastapi import Depends, Query, APIRouter
+from fastapi import Query, APIRouter
 
-from typing import Annotated, Optional
+from typing import Optional
 
-from sqlalchemy.orm import Session
-
-from database import SessionLocal, ToDoListTable
-from todos import ToDosSchema
+from database import ToDoListTable, db_dependency
+from schema import ToDosSchema
 
 
 
 router = APIRouter()
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
-db_dependency = Annotated[Session, Depends(get_db)]
 
 
 @router.get("/debugDatabase")
