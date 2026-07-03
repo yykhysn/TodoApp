@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
+from jose import jwt
 from passlib.context import CryptContext
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -11,6 +13,10 @@ from database import db_dependency, Users
 router = APIRouter()
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+token_expires_delta = timedelta(minutes=15)
+secret_key = "secret"
+jwt_algorithm = "HS256"
 
 
 @router.post("/user/register")
@@ -33,4 +39,5 @@ async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]
         return "User not found"
     if not crypt_context.verify(login_form.password, str(user_to_login.hashed_password)):
         return "Incorrect password"
-    return f"Welcome, {login_form.username}!"
+    user_access_token = {"sub": user_to_login.username, "exp": datetime.now(timezone.utc) + token_expires_delta}
+    return jwt.encode(user_access_token, secret_key, algorithm=jwt_algorithm)
