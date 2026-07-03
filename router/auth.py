@@ -1,9 +1,10 @@
-from fastapi import APIRouter
+from typing import Annotated
+from passlib.context import CryptContext
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 
 from schema import UsersSchema
 from database import db_dependency, Users
-
-from passlib.context import CryptContext
 
 
 
@@ -11,10 +12,6 @@ router = APIRouter()
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-@router.get("/login")
-async def login():
-    return {"user": "Login on"}
 
 @router.post("/user/register")
 async def register_user(user_to_register: UsersSchema, db:db_dependency):
@@ -28,3 +25,12 @@ async def register_user(user_to_register: UsersSchema, db:db_dependency):
     )
     db.add(user_to_register)
     db.commit()
+
+@router.post("/user/login")
+async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()], db:db_dependency):
+    user_to_login = db.query(Users).filter(Users.username == login_form.username).first()
+    if user_to_login is None:
+        return "User not found"
+    if not crypt_context.verify(login_form.password, str(user_to_login.hashed_password)):
+        return "Incorrect password"
+    return f"Welcome, {login_form.username}!"
