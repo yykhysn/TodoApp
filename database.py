@@ -1,7 +1,5 @@
 from typing import Annotated
-
 from fastapi import Depends
-
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
@@ -33,7 +31,7 @@ class ToDoListTable(Base):
     description = Column(String)
     priority = Column(Integer)
     is_completed = Column(Boolean, default=False)
-    owner_user_id = Column(Integer, ForeignKey("User.id"))
+    owner_user_id = Column(Integer, ForeignKey("Users.id"))
 
 
 class Users(Base):

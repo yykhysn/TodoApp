@@ -1,5 +1,3 @@
-import string
-
 from pydantic import BaseModel, Field
 
 
@@ -9,7 +7,6 @@ class ToDosSchema(BaseModel):
     description: str = Field(max_length=64)
     priority: int = Field(ge=1, le=4)
     is_completed: bool = Field(default=False)
-    owner_user_id: int = Field(max_length=8)
 
 
 class UsersSchema(BaseModel):
