@@ -1,16 +1,14 @@
 from fastapi import Query, APIRouter
-
 from typing import Optional
+from starlette import status
 
-from database import ToDoListTable, db_dependency
+from database import ToDoListTable, Users, db_dependency
 from schema import ToDosSchema
+from router.auth import user_dependency
 
 
 
 router = APIRouter()
-
-
-
 
 
 @router.get("/debugDatabase")
@@ -28,11 +26,13 @@ def search_todos(db: db_dependency,
     else:
         return "No such todos"
 
-@router.post("/createTodos")
-def create_todos(db: db_dependency, new_todo: ToDosSchema):
-    new_todo = ToDoListTable(**new_todo.model_dump())
+@router.post("/createTodos", status_code=status.HTTP_201_CREATED)
+def create_todos(user: user_dependency, db: db_dependency, new_todo: ToDosSchema):
+    user_id = db.query(Users).filter(Users.username == user).first().id
+    new_todo = ToDoListTable(**new_todo.model_dump(), owner_user_id=user_id)
     db.add(new_todo)
     db.commit()
+    return f"Success! {new_todo.title}'s todo has been created!"
 
 @router.put("/updateTodos")
 def update_todos(db: db_dependency, todo_id: int, update_todo: ToDosSchema):
