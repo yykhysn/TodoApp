@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 
-from schema import UsersSchema
+from config.input_schema import UsersInputSchema
 from database import db_dependency, Users
 from utils import status_response_error
 
@@ -15,7 +15,7 @@ router = APIRouter()
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-token_expires_delta = timedelta(minutes=15)
+token_expires_delta = timedelta(minutes=30)
 secret_key = "secret"
 jwt_algorithm = "HS256"
 
@@ -32,12 +32,13 @@ def validate_user_credential(token_to_validate: Annotated[str, Depends(oauth2_sc
         status_response_error(401, "Token has expired")
     except JWTError:
         status_response_error(401, "Token is Invalid")
+    return username
 user_dependency = Annotated[str, Depends(validate_user_credential)]
 
 
 
 @router.post("/user/register")
-async def register_user(user_to_register: UsersSchema, db:db_dependency):
+async def register_user(user_to_register: UsersInputSchema, db:db_dependency):
     user_to_register = Users(
         email=user_to_register.email,
         username=user_to_register.username,
