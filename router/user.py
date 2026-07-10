@@ -11,7 +11,7 @@ from utils import status_response_error
 
 
 
-router = APIRouter()
+router = APIRouter(prefix="/user", tags=["User"])
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -37,7 +37,7 @@ user_dependency = Annotated[str, Depends(validate_user_credential)]
 
 
 
-@router.post("/user/register")
+@router.post("/register")
 async def register_user(user_to_register: UsersInputSchema, db:db_dependency):
     user_to_register = Users(
         email=user_to_register.email,
@@ -49,7 +49,7 @@ async def register_user(user_to_register: UsersInputSchema, db:db_dependency):
     db.add(user_to_register)
     db.commit()
 
-@router.post("/user/login")
+@router.post("/login")
 async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()], db:db_dependency):
     user_to_login = db.query(Users).filter(Users.username == login_form.username).first()
     if user_to_login is None:

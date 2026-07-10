@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 
-import router.auth, router.to_do_app
+import router.user, router.todos
 
 
 
 app = FastAPI()
 
-app.include_router(router.auth.router)
-app.include_router(router.to_do_app.router)
+app.include_router(router.user.router)
+app.include_router(router.todos.router)
