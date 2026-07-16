@@ -4,10 +4,11 @@ from jose import jwt, JWTError, ExpiredSignatureError
 from passlib.context import CryptContext
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from starlette import status
 
-from config.input_schema import UsersInputSchema
+from config.input_schema import UsersRegisterSchema, UsersUpdateSchema
 from database import db_dependency, Users
-from utils import status_response_error
+from utils import status_response_error, sql_rows_to_dict
 
 
 
@@ -37,8 +38,8 @@ user_dependency = Annotated[str, Depends(validate_user_credential)]
 
 
 
-@router.post("/register")
-async def register_user(user_to_register: UsersInputSchema, db:db_dependency):
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+async def register_user(user_to_register: UsersRegisterSchema, db:db_dependency):
     user_to_register = Users(
         email=user_to_register.email,
         username=user_to_register.username,
@@ -49,7 +50,7 @@ async def register_user(user_to_register: UsersInputSchema, db:db_dependency):
     db.add(user_to_register)
     db.commit()
 
-@router.post("/login")
+@router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()], db:db_dependency):
     user_to_login = db.query(Users).filter(Users.username == login_form.username).first()
     if user_to_login is None:
@@ -58,3 +59,25 @@ async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]
         status_response_error(401, "Incorrect password")
     user_access_token = {"sub": user_to_login.username, "exp": datetime.now(timezone.utc) + token_expires_delta}
     return {"access_token": jwt.encode(user_access_token, secret_key, jwt_algorithm), "token_type": "bearer"}
+
+@router.get("/info", status_code=status.HTTP_200_OK)
+async def current_user_info(user: user_dependency, db:db_dependency):
+    user_information = (db.query(Users.username, Users.first_name, Users.last_name, Users.email, Users.is_enabled).
+                        filter(Users.username == user).first())
+    return sql_rows_to_dict(user_information)
+
+@router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
+async def update_user(user: user_dependency, db:db_dependency, user_info: UsersUpdateSchema):
+    user_to_update = db.query(Users).filter(Users.username == user).first()
+    user_info = user_info.model_dump(exclude_unset=True)
+    if "new_password" in user_info.keys() and "old_password" in user_info.keys():
+        if not crypt_context.verify(user_info["old_password"], str(user_to_update.hashed_password)):
+            status_response_error(401, "Incorrect old password")
+        user_info["hashed_password"] = crypt_context.hash(user_info["new_password"])
+    # del old_pass and new_pass if any
+    user_info.pop("new_password", None)
+    user_info.pop("old_password", None)
+    for k, v in user_info.items():
+        setattr(user_to_update, k, v)
+    db.commit()
+
