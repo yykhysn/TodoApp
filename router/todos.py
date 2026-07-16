@@ -44,7 +44,7 @@ def create_todos(user: user_dependency, db: db_dependency, new_todo: ToDosInputS
     db.commit()
     return f"Success! {new_todo.title}'s todo has been created!"
 
-@router.put("/update")
+@router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
 def update_todos(db: db_dependency, user:user_dependency,
                  public_uuid: str = Query(min_length=32, max_length=32),
                  priority: Optional[int] = Query(ge=TODOS_PRIORITY_MIN, le=TODOS_PRIORITY_MAX, default=None),
