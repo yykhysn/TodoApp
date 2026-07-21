@@ -55,6 +55,8 @@ async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]
     user_to_login = db.query(Users).filter(Users.username == login_form.username).first()
     if user_to_login is None:
         status_response_error(401, "User not found")
+    if not user_to_login.is_enabled:
+        status_response_error(401, "User is disabled")
     if not crypt_context.verify(login_form.password, str(user_to_login.hashed_password)):
         status_response_error(401, "Incorrect password")
     user_access_token = {"sub": user_to_login.username, "exp": datetime.now(timezone.utc) + token_expires_delta}
