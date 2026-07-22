@@ -1,0 +1,10 @@
+# Uncomment ONLY one line to switch database
+
+# SQLite (file path relative to where you run the app, or use absolute path)
+# DATABASE_URL = "sqlite:///./database_configuration/to_do_app.sqlite3"
+
+# PostgreSQL
+# DATABASE_URL = "postgresql://todoapp:to_do_app@localhost/TodoApp?options=-csearch_path%3Dmain"
+
+# MySQL
+# DATABASE_URL = "mysql+pymysql://todoapp:to_do_app@localhost/TodoApp"

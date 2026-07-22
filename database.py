@@ -1,14 +1,19 @@
+import os
 from typing import Annotated
 from fastapi import Depends
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, FetchedValue
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
+from dotenv import load_dotenv
 
 
+load_dotenv(dotenv_path="./database_configuration/data_source_config")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-DATABASE_URL = "sqlite:///./DATA/to_do_app.sqlite3"
-
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+connect_args = {}
+if DATABASE_URL.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
