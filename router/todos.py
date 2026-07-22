@@ -3,10 +3,10 @@ from typing import Optional
 from starlette import status
 
 from database import ToDoListTable, Users, db_dependency
-from config.input_schema import ToDosInputSchema
+from data_constraints.input_schema import ToDosInputSchema
 from router.user import user_dependency
 from utils import sql_rows_to_dict, status_response_error
-from config.constants import *
+from data_constraints.constants import *
 
 
 

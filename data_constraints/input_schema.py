@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
-from config.constants import *
+from data_constraints.constants import *
 
 
 class ToDosInputSchema(BaseModel):

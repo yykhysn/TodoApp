@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from starlette import status
 
-from config.input_schema import UsersRegisterSchema, UsersUpdateSchema
+from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
 from database import db_dependency, Users
 from utils import status_response_error, sql_rows_to_dict
 
