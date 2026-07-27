@@ -1,5 +1,6 @@
 import os
 from typing import Annotated
+
 from fastapi import Depends
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, FetchedValue
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
