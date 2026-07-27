@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from dotenv import load_dotenv
 
 
+
 load_dotenv(dotenv_path="./database_configuration/data_source_config")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
