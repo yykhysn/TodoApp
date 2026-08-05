@@ -26,6 +26,7 @@ def get_db():
     try:
         yield db
     finally:
+        db.commit()
         db.close()
 db_dependency = Annotated[Session, Depends(get_db)]
 

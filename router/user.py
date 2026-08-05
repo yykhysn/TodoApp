@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
+
 from jose import jwt, JWTError, ExpiredSignatureError
 from passlib.context import CryptContext
 from fastapi import APIRouter, Depends
@@ -9,7 +10,6 @@ from starlette import status
 from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
 from database import db_dependency, Users
 from utils import status_response_error, sql_rows_to_dict
-
 
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -48,7 +48,6 @@ async def register_user(user_to_register: UsersRegisterSchema, db:db_dependency)
         hashed_password=crypt_context.hash(user_to_register.password),
     )
     db.add(user_to_register)
-    db.commit()
 
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()], db:db_dependency):
@@ -81,5 +80,3 @@ async def update_user(user: user_dependency, db:db_dependency, user_info: UsersU
     user_info.pop("old_password", None)
     for k, v in user_info.items():
         setattr(user_to_update, k, v)
-    db.commit()
-
