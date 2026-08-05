@@ -1,9 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
+
 from main import app
-
-
-import router.user as user
 from data_constraints.input_schema import UsersRegisterSchema
 
 
@@ -19,4 +17,8 @@ def sample_user():
         username="PytestTestUser",
     )
 
+
+def test_register_user(sample_user):
+    response = client.post("/user/register", json=sample_user.model_dump())
+    assert response.status_code == 201
 

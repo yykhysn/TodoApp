@@ -2,17 +2,7 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from database import SessionLocal, Base
-
-
-@pytest.fixture
-def test_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.rollback()
-        db.close()
+from database import Base
 
 
 def test_database_connection(test_db):
