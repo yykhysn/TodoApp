@@ -14,7 +14,7 @@ def sample_user():
         first_name="Pytest",
         last_name="TestUser",
         password="test_test_test_test",
-        username="PytestTestUser",
+        username="PytestTestUser"
     )
 
 
