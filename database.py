@@ -50,4 +50,4 @@ class Users(Base):
     last_name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_enabled = Column(Boolean, default=True, nullable=False)
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
