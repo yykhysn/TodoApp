@@ -4,8 +4,8 @@ import pytest
 
 from database import SessionLocal, get_db, Users
 from main import app
-from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
-from router.user import validate_user_credential
+from data_constraints.input_schema import UsersRegisterSchema
+from router.user import validate_user_credential, crypt_context
 
 
 @pytest.fixture
@@ -27,6 +27,7 @@ def override_db_dependency(test_db):
     yield
     app.dependency_overrides.pop(get_db, None)
 
+
 @pytest.fixture(autouse=True, scope="session")
 def add_test_data():
     test_user_name = str(uuid.uuid4().hex)
@@ -38,7 +39,7 @@ def add_test_data():
         password=test_user_password,
         username= test_user_name
     ).model_dump()
-    test_user["hashed_password"] = test_user.pop("password")
+    test_user["hashed_password"] = crypt_context.hash(test_user.pop("password"))
     test_user = Users(**test_user)
     db = SessionLocal()
     db.add(test_user)
