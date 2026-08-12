@@ -25,3 +25,4 @@ def test_getAll_todos():
     assert response_json[0]["description"] == "Test if the app can get this test todo item"
     assert response_json[0]["priority"] == 1
     assert response_json[0]["is_completed"] is False
+    assert response_json[0]["public_uuid"] is not None
