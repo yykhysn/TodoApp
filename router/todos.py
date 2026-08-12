@@ -12,10 +12,6 @@ from data_constraints.constants import *
 router = APIRouter(prefix="/todos", tags=["Todos"])
 
 
-@router.get("/debugDatabase")
-def read_all_todolist_table(db: db_dependency):
-    return db.query(ToDoListTable).all()
-
 @router.get("/search", status_code=status.HTTP_200_OK)
 def search_todos(db: db_dependency, user:user_dependency,
                  priority: Optional[int] = Query(ge=TODOS_PRIORITY_MIN, le=TODOS_PRIORITY_MAX, default=None),
