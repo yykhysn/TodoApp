@@ -2,9 +2,9 @@ import uuid
 
 import pytest
 
-from database import SessionLocal, get_db, Users
+from database import SessionLocal, get_db, Users, ToDoListTable
 from main import app
-from data_constraints.input_schema import UsersRegisterSchema
+from data_constraints.input_schema import UsersRegisterSchema, ToDosInputSchema
 from router.user import validate_user_credential, crypt_context
 
 
@@ -48,7 +48,20 @@ def add_test_data():
         return test_user.username
 
     app.dependency_overrides[validate_user_credential] = _override_user_dependency
+
+    test_todo = ToDosInputSchema(
+        title="Pytest Auto Test Item",
+        description="Test if the app can get this test todo item",
+        priority=1,
+        is_completed=False
+    ).model_dump()
+    user_id = db.query(Users).filter(Users.username == test_user.username).first().id
+    test_todo = ToDoListTable(**test_todo, owner_user_id=user_id)
+    db.add(test_todo)
+    db.commit()
+
     yield
+
     db.delete(test_user)
     db.commit()
     db.close()
