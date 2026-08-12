@@ -1,9 +1,11 @@
 import os
 from typing import Annotated
+
 from fastapi import Depends
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, FetchedValue
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from dotenv import load_dotenv
+
 
 
 load_dotenv(dotenv_path="./database_configuration/data_source_config")
@@ -24,6 +26,7 @@ def get_db():
     try:
         yield db
     finally:
+        db.commit()
         db.close()
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -47,4 +50,4 @@ class Users(Base):
     last_name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_enabled = Column(Boolean, default=True, nullable=False)
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
