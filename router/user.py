@@ -9,7 +9,7 @@ from starlette import status
 
 from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
 from database import db_dependency, Users
-from utils import status_response_error, sql_rows_to_dict
+from utils import status_response_error, sql_result_to_dict
 
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -49,6 +49,7 @@ async def register_user(user_to_register: UsersRegisterSchema, db:db_dependency)
     )
     db.add(user_to_register)
 
+
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()], db:db_dependency):
     user_to_login = db.query(Users).filter(Users.username == login_form.username).first()
@@ -61,11 +62,13 @@ async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]
     user_access_token = {"sub": user_to_login.username, "exp": datetime.now(timezone.utc) + token_expires_delta}
     return {"access_token": jwt.encode(user_access_token, secret_key, jwt_algorithm), "token_type": "bearer"}
 
+
 @router.get("/info", status_code=status.HTTP_200_OK)
 async def current_user_info(user: user_dependency, db:db_dependency):
     user_information = (db.query(Users.username, Users.first_name, Users.last_name, Users.email, Users.is_enabled).
                         filter(Users.username == user).first())
-    return sql_rows_to_dict(user_information)
+    return sql_result_to_dict(user_information)
+
 
 @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
 async def update_user(user: user_dependency, db:db_dependency, user_info: UsersUpdateSchema):
