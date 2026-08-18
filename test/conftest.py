@@ -30,14 +30,14 @@ def override_db_dependency(test_db):
 
 @pytest.fixture(autouse=True, scope="session")
 def add_test_data():
-    test_user_name = str(uuid.uuid4().hex)
+    test_user_username = str(uuid.uuid4().hex)
     test_user_password = str(uuid.uuid4())
     test_user = UsersRegisterSchema(
-        email=f"{test_user_name}@pytest.org",
+        email=f"{test_user_username}@pytest.org",
         first_name="Test",
         last_name="User",
         password=test_user_password,
-        username= test_user_name
+        username= test_user_username
     ).model_dump()
     test_user["hashed_password"] = crypt_context.hash(test_user.pop("password"))
     test_user = Users(**test_user)
@@ -60,7 +60,7 @@ def add_test_data():
     db.add(test_todo)
     db.commit()
 
-    yield
+    yield {"test_user_username": test_user_username, "test_user_password": test_user_password}
 
     db.delete(test_user)
     db.commit()
