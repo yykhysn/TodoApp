@@ -23,6 +23,7 @@ def sample_user():
     )
 
 
+
 def test_register_user(sample_user, test_db):
     sample_user_to_register = sample_user.model_dump()
     sample_user_username = sample_user_to_register["username"]
@@ -36,3 +37,15 @@ def test_register_user(sample_user, test_db):
     assert user_to_register_in_db.last_name == sample_user.last_name
     assert user_to_register_in_db.hashed_password != sample_user.password
     assert user_to_register_in_db.is_enabled == True
+
+
+def test_get_current_user_info(add_test_data):
+    response = client.get("/user/info")
+    assert response.status_code == 200
+    response_json = response.json()
+    test_user_username = add_test_data["test_user_username"]
+    assert response_json["username"] == test_user_username
+    assert response_json["first_name"] == "Test"
+    assert response_json["last_name"] == "User"
+    assert response_json["email"] == f"{test_user_username}@pytest.org"
+    assert response_json["is_enabled"] == True
