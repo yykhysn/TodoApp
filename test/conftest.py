@@ -31,7 +31,7 @@ def override_db_dependency(test_db):
 @pytest.fixture(autouse=True, scope="session")
 def add_test_data():
     test_user_username = str(uuid.uuid4().hex)
-    test_user_password = str(uuid.uuid4())
+    test_user_password = str(uuid.uuid4().hex)
     test_user = UsersRegisterSchema(
         email=f"{test_user_username}@pytest.org",
         first_name="Test",
