@@ -1,13 +1,14 @@
 import uuid
+from datetime import datetime, timezone
 
 import pytest
 from fastapi.testclient import TestClient
+from jose import jwt
 
 from database import Users
 from main import app
 from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
-from router.user import crypt_context
-
+from router.user import crypt_context, secret_key, jwt_algorithm, token_expires_delta, validate_user_credential
 
 client = TestClient(app)
 
@@ -94,3 +95,13 @@ def test_update_user(add_test_data, test_db):
     assert response.status_code == 204, "Test Change User is_enabled Fail"
     user_to_update_in_db = _update_user_retrieve_in_db()
     assert user_to_update_in_db.is_enabled == False
+
+
+def test_validate_user_credential(add_test_data):
+    dependency_overrides = app.dependency_overrides.pop(validate_user_credential, None)
+    login_user_username = add_test_data["test_user_username"]
+    test_user_access_token_encode = {"sub": login_user_username, "exp": datetime.now(timezone.utc) + token_expires_delta}
+    test_user_access_token = jwt.encode(test_user_access_token_encode, secret_key, jwt_algorithm)
+    assert validate_user_credential(test_user_access_token) == login_user_username
+    if dependency_overrides is not None:
+        app.dependency_overrides[validate_user_credential] = dependency_overrides
