@@ -59,9 +59,12 @@ def add_test_data():
     test_todo = ToDoListTable(**test_todo, owner_user_id=user_id)
     db.add(test_todo)
     db.commit()
+    db.refresh(test_todo)
+    test_todo_public_uuid = test_todo.public_uuid
 
-    yield {"test_user_username": test_user_username, "test_user_password": test_user_password}
+    yield {"test_user_username": test_user_username, "test_user_password": test_user_password, "test_todo_public_uuid": test_todo_public_uuid}
 
     db.delete(test_user)
+    db.delete(test_todo)
     db.commit()
     db.close()
