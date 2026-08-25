@@ -40,7 +40,7 @@ def create_todos(user: user_dependency, db: db_dependency, new_todo: ToDosInputS
 
 @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
 def update_todos(db: db_dependency, user:user_dependency,
-                 public_uuid: str = Query(min_length=32, max_length=32),
+                 public_uuid: str = Query(min_length=TODOS_PUBLIC_UUID_LENGTH, max_length=TODOS_PUBLIC_UUID_LENGTH),
                  priority: Optional[int] = Query(ge=TODOS_PRIORITY_MIN, le=TODOS_PRIORITY_MAX, default=None),
                  title: Optional[str] = Query(max_length=TODOS_TITLE_MAX_LEN, default=None),
                  description: Optional[str] = Query(max_length=TODOS_DESC_MAX_LEN, default=None),
