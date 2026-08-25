@@ -57,6 +57,7 @@ def update_todos(db: db_dependency, user:user_dependency,
         record_to_update.description = description
     if is_completed is not None:
         record_to_update.is_completed = is_completed
+    db.add(record_to_update)
 
 @router.get("/getAll", status_code=status.HTTP_200_OK)
 def get_all_todos(db: db_dependency, user: user_dependency):
