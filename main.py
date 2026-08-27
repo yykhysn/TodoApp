@@ -8,6 +8,7 @@ app = FastAPI()
 
 app.include_router(router.user_api.router)
 app.include_router(router.todos_api.router)
+app.include_router(router.user_web.router)
 
 
 @app.get("/health_check")
