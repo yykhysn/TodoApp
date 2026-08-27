@@ -4,12 +4,12 @@ from starlette import status
 
 from database import ToDoListTable, Users, db_dependency
 from data_constraints.input_schema import ToDosInputSchema
-from router.user import user_dependency
+from router.user_api import user_dependency
 from utils import sql_result_to_dict, status_response_error
 from data_constraints.constants import *
 
 
-router = APIRouter(prefix="/todos", tags=["Todos"])
+router = APIRouter(prefix="/api/todos", tags=["Todos API"])
 
 
 @router.get("/search", status_code=status.HTTP_200_OK)

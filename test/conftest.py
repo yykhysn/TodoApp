@@ -5,7 +5,7 @@ import pytest
 from database import SessionLocal, get_db, Users, ToDoListTable
 from main import app
 from data_constraints.input_schema import UsersRegisterSchema, ToDosInputSchema
-from router.user import validate_user_credential, crypt_context
+from router.user_api import validate_user_credential, crypt_context
 
 
 @pytest.fixture

@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from database import Users
 from main import app
 from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
-from router.user import crypt_context, validate_user_credential
+from router.user_api import crypt_context, validate_user_credential
 
 client = TestClient(app)
 
