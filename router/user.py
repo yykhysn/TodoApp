@@ -11,7 +11,6 @@ from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
 from database import db_dependency, Users
 from utils import status_response_error, sql_result_to_dict
 
-
 router = APIRouter(prefix="/user", tags=["User"])
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

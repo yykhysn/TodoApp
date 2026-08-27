@@ -23,7 +23,6 @@ def sample_user():
     )
 
 
-
 def test_register_user(sample_user, test_db):
     sample_user_to_register = sample_user.model_dump()
     sample_user_username = sample_user_to_register["username"]
