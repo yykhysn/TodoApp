@@ -11,6 +11,6 @@ app.include_router(router.todos_api.router)
 app.include_router(router.user_web.router)
 
 
-@app.get("/health_check")
+@app.get("/api/health_check")
 async def health_check():
     return {"status": "ok"}
