@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TodoApp</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">Welcome to Register</div>
+            <form id="register-user-form">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="user-email" autocomplete="user-email" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Username</label>
+                        <input type="text" class="form-control" name="user-username" autocomplete="user-username" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>First Name</label>
+                        <input type="text" class="form-control" name="user-firstname" autocomplete="user-firstname" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Lastname</label>
+                        <input type="text" class="form-control" name="user-lastname" autocomplete="user-lastname" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="user-password" autocomplete="user-password" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Confirm Password</label>
+                        <input type="password" class="form-control" name="user-confirm-password" autocomplete="user-password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Create a user</button>
+            </form>
+            <div class="card-footer text-muted">
+                <a href="login.html">Already have an account? Login Now</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
