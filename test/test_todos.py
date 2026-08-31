@@ -30,7 +30,7 @@ def is_sample_todo_in_db(db):
 
 
 def test_get_all_todos():
-    response = client.get("/todos/getAll")
+    response = client.get("/api/todos/getAll")
     assert response.status_code == 200
     response_json = response.json()
     assert response_json[0]["title"] == "Pytest Auto Test Item"
@@ -41,7 +41,7 @@ def test_get_all_todos():
 
 def test_create_todo(sample_todo, test_db):
     assert is_sample_todo_in_db(test_db) is False
-    response = client.post("/todos/create", json=sample_todo.model_dump())
+    response = client.post("/api/todos/create", json=sample_todo.model_dump())
     assert response.status_code == 201
     assert response.json() == "Success! PytestTestTodoTitle's todo has been created!"
     test_db.flush()
@@ -49,13 +49,14 @@ def test_create_todo(sample_todo, test_db):
 
 
 def test_search_todo():
-    def test_todo_item_exist(response):
+    def test_todo_item_exist(todo_search_params):
         test_todo_item_without_public_uuid_field = {
             "title": "Pytest Auto Test Item",
             "description": "Test if the app can get this test todo item",
             "priority": 1,
             "is_completed": False
         }
+        response = client.get("/api/todos/search", params=todo_search_params)
         assert response.status_code == 200
         response_json = response.json()
         assert any(
@@ -68,70 +69,32 @@ def test_search_todo():
     is_completed_search_parameter = False
 
     # ========== 1. Single parameter (4 cases) ==========
-    test_todo_item_exist(client.get("/todos/search", params={"title": title_search_parameter}))
-    test_todo_item_exist(client.get("/todos/search", params={"description": description_search_parameter}))
-    test_todo_item_exist(client.get("/todos/search", params={"priority": priority_search_parameter}))
-    test_todo_item_exist(client.get("/todos/search", params={"is_completed": is_completed_search_parameter}))
+    test_todo_item_exist({"title": title_search_parameter})
+    test_todo_item_exist({"description": description_search_parameter})
+    test_todo_item_exist({"priority": priority_search_parameter})
+    test_todo_item_exist({"is_completed": is_completed_search_parameter})
     # ========== 2. Two‑parameter combinations (6 cases) ==========
-    test_todo_item_exist(client.get("/todos/search", params={
-        "title": title_search_parameter,
-        "description": description_search_parameter
-    }))
-    test_todo_item_exist(client.get("/todos/search", params={
-        "title": title_search_parameter,
-        "priority": priority_search_parameter
-    }))
-    test_todo_item_exist(client.get("/todos/search", params={
-        "title": title_search_parameter,
-        "is_completed": is_completed_search_parameter
-    }))
-    test_todo_item_exist(client.get("/todos/search", params={
-        "description": description_search_parameter,
-        "priority": priority_search_parameter
-    }))
-    test_todo_item_exist(client.get("/todos/search", params={
-        "description": description_search_parameter,
-        "is_completed": is_completed_search_parameter
-    }))
-    test_todo_item_exist(client.get("/todos/search", params={
-        "priority": priority_search_parameter,
-        "is_completed": is_completed_search_parameter
-    }))
+    test_todo_item_exist({"title": title_search_parameter, "description": description_search_parameter})
+    test_todo_item_exist({"title": title_search_parameter, "priority": priority_search_parameter})
+    test_todo_item_exist({"title": title_search_parameter, "is_completed": is_completed_search_parameter})
+    test_todo_item_exist({"description": description_search_parameter, "priority": priority_search_parameter})
+    test_todo_item_exist({"description": description_search_parameter, "is_completed": is_completed_search_parameter})
+    test_todo_item_exist({"priority": priority_search_parameter, "is_completed": is_completed_search_parameter})
     # ========== 3. Three‑parameter combinations (4 cases) ==========
-    test_todo_item_exist(client.get("/todos/search", params={
-        "title": title_search_parameter,
-        "description": description_search_parameter,
-        "priority": priority_search_parameter
-    }))
-    test_todo_item_exist(client.get("/todos/search", params={
-        "title": title_search_parameter,
-        "description": description_search_parameter,
-        "is_completed": is_completed_search_parameter
-    }))
-    test_todo_item_exist(client.get("/todos/search", params={
-        "title": title_search_parameter,
-        "priority": priority_search_parameter,
-        "is_completed": is_completed_search_parameter
-    }))
-    test_todo_item_exist(client.get("/todos/search", params={
-        "description": description_search_parameter,
-        "priority": priority_search_parameter,
-        "is_completed": is_completed_search_parameter
-    }))
+    test_todo_item_exist({"title": title_search_parameter, "description": description_search_parameter, "priority": priority_search_parameter})
+    test_todo_item_exist({"title": title_search_parameter, "description": description_search_parameter, "is_completed": is_completed_search_parameter})
+    test_todo_item_exist({"title": title_search_parameter, "priority": priority_search_parameter, "is_completed": is_completed_search_parameter})
+    test_todo_item_exist({"description": description_search_parameter, "priority": priority_search_parameter, "is_completed": is_completed_search_parameter})
     # ========== 4. All four parameters combined (1 case) ==========
-    test_todo_item_exist(client.get("/todos/search", params={
-        "title": title_search_parameter,
-        "description": description_search_parameter,
-        "priority": priority_search_parameter,
-        "is_completed": is_completed_search_parameter
-    }))
+    test_todo_item_exist({"title": title_search_parameter, "description": description_search_parameter,
+                          "priority": priority_search_parameter, "is_completed": is_completed_search_parameter})
 
 
 def test_update_todo(add_test_data, test_db):
     def test_update_todo_field(update_todo_parameters):
         todo_to_update_public_uuid = add_test_data["test_todo_public_uuid"]
         update_todo_parameters["public_uuid"] = todo_to_update_public_uuid
-        response = client.put("/todos/update", params=update_todo_parameters)
+        response = client.put("/api/todos/update", params=update_todo_parameters)
         assert response.status_code == 204, f"Update request failed with params: {update_todo_parameters}"
         updated_todo_item_in_db = test_db.query(ToDoListTable).filter(ToDoListTable.public_uuid == todo_to_update_public_uuid).first()
         for field_to_update, value_to_update in update_todo_parameters.items():
