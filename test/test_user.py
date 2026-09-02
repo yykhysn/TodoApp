@@ -23,10 +23,10 @@ def sample_user():
     )
 
 
-def test_register_user(sample_user, test_db):
-    sample_user_to_register = sample_user.model_dump()
-    sample_user_username = sample_user_to_register["username"]
-    response = client.post("/api/user/register", json=sample_user_to_register)
+def test_register_user(sample_user, test_db, add_test_data):
+    user_to_register = sample_user.model_dump()
+    sample_user_username = user_to_register["username"]
+    response = client.post("/api/user/register", json=user_to_register)
     assert response.status_code == 201
     user_to_register_in_db = test_db.query(Users).filter(Users.username == sample_user_username).first()
     assert user_to_register_in_db.id is not None
@@ -35,6 +35,19 @@ def test_register_user(sample_user, test_db):
     assert user_to_register_in_db.last_name == sample_user.last_name
     assert user_to_register_in_db.hashed_password != sample_user.password
     assert user_to_register_in_db.is_enabled == True
+
+    # Test to register an exists user
+    exists_user_username = add_test_data["test_user_username"]
+    user_to_register["username"] = exists_user_username
+    response = client.post("/api/user/register", json=user_to_register)
+    assert response.status_code == 400
+    assert "Username already exists" in response.json()["detail"]
+
+    user_to_register["username"] = sample_user_username
+    user_to_register["email"] = f"{exists_user_username}@pytest.org"
+    response = client.post("/api/user/register", json=user_to_register)
+    assert response.status_code == 400
+    assert "Email already exists" in response.json()["detail"]
 
 
 def test_get_current_user_info(add_test_data):
