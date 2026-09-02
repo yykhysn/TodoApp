@@ -28,7 +28,6 @@ def test_register_user(sample_user, test_db):
     sample_user_username = sample_user_to_register["username"]
     response = client.post("/api/user/register", json=sample_user_to_register)
     assert response.status_code == 201
-    test_db.flush()
     user_to_register_in_db = test_db.query(Users).filter(Users.username == sample_user_username).first()
     assert user_to_register_in_db.id is not None
     assert user_to_register_in_db.email == sample_user.email
@@ -55,7 +54,6 @@ def test_update_user(add_test_data, test_db):
     old_password = add_test_data["test_user_password"]
     new_password = str(uuid.uuid4().hex)
     def _update_user_retrieve_in_db():
-        test_db.flush()
         return test_db.query(Users).filter(Users.username == user_name).first()
 
     # Test update password with a wrong old password:

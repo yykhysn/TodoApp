@@ -44,7 +44,6 @@ def test_create_todo(sample_todo, test_db):
     response = client.post("/api/todos/create", json=sample_todo.model_dump())
     assert response.status_code == 201
     assert response.json() == "Success! PytestTestTodoTitle's todo has been created!"
-    test_db.flush()
     assert is_sample_todo_in_db(test_db) is True
 
 
