@@ -84,3 +84,4 @@ async def update_user(user: user_dependency, db:db_dependency, user_info: UsersU
     for k, v in user_info.items():
         setattr(user_to_update, k, v)
     db.add(user_to_update)
+    db.flush()

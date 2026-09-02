@@ -36,6 +36,7 @@ def create_todos(user: user_dependency, db: db_dependency, new_todo: ToDosInputS
     user_id = db.query(Users).filter(Users.username == user).first().id
     new_todo = ToDoListTable(**new_todo.model_dump(), owner_user_id=user_id)
     db.add(new_todo)
+    db.flush()
     return f"Success! {new_todo.title}'s todo has been created!"
 
 @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
@@ -58,6 +59,7 @@ def update_todos(db: db_dependency, user:user_dependency,
     if is_completed is not None:
         record_to_update.is_completed = is_completed
     db.add(record_to_update)
+    db.flush()
 
 @router.get("/getAll", status_code=status.HTTP_200_OK)
 def get_all_todos(db: db_dependency, user: user_dependency):
