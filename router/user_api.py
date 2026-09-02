@@ -21,7 +21,7 @@ token_expires_delta = timedelta(minutes=30)
 secret_key = "secret"
 jwt_algorithm = "HS256"
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 
 
 def validate_user_credential(token_to_validate: Annotated[str, Depends(oauth2_scheme)]):
