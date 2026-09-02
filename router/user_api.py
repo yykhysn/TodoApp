@@ -5,6 +5,7 @@ from jose import jwt, JWTError, ExpiredSignatureError
 from passlib.context import CryptContext
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from sqlalchemy.exc import IntegrityError
 from starlette import status
 
 from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
@@ -48,6 +49,16 @@ async def register_user(user_to_register: UsersRegisterSchema, db:db_dependency)
         hashed_password=crypt_context.hash(user_to_register.password),
     )
     db.add(user_to_register)
+    try:
+        db.flush()
+    except IntegrityError as e:
+        db.rollback()
+        error_msg = str(e.orig)
+        if "UNIQUE constraint failed: Users.email" == error_msg:
+            status_response_error(400, f"Email already exists: {user_to_register.email}")
+        if "UNIQUE constraint failed: Users.username" == error_msg:
+            status_response_error(400, f"Username already exists: {user_to_register.username}")
+
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
