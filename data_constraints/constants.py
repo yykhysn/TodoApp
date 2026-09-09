@@ -1,3 +1,5 @@
+import secrets
+
 
 """ ToDos """
 TODOS_TITLE_MAX_LEN = 64
@@ -18,3 +20,6 @@ USERS_LASTNAME_MAX_LEN = 64
 
 
 """ Auth """
+TOKEN_EXPIRES_MINUTES = 30
+SECRET_KEY = secrets.token_hex(32)
+JWT_ALGORITHM = 'HS256'

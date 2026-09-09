@@ -11,15 +11,16 @@ from starlette import status
 from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
 from database import db_dependency, Users
 from utils import status_response_error, sql_result_to_dict
+from data_constraints.constants import *
 
 
 router = APIRouter(prefix="/api/user", tags=["User API"])
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-token_expires_delta = timedelta(minutes=30)
-secret_key = "secret"
-jwt_algorithm = "HS256"
+token_expires_delta = timedelta(minutes=TOKEN_EXPIRES_MINUTES)
+secret_key = SECRET_KEY
+jwt_algorithm = JWT_ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 
