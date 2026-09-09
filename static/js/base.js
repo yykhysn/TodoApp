@@ -195,7 +195,8 @@
                 });
 
                 if (response.ok) {
-                    window.location.href = '/auth/login-page';
+                    alert("Register Successfully! Please login");
+                    window.location.href = '/user/login.html';
                 } else {
                     const error = await response.json();
                     let errMsg = "";
@@ -215,11 +216,11 @@
                         errMsg = error.detail || "Register Fail";
                     }
 
-                    alert(`Error:\n${errMsg}`);
+                    alert(`Error:${errMsg}`);
                 }
             }
             catch (error) {
-                console.error('Register User Error:', error);
+                console.error('User Register Error:', error);
                 alert(`An error occurred. Please try again: ${error.message}`);
             }
         });
