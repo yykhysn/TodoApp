@@ -1,0 +1,19 @@
+<div>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top main-color">
+        <span class="navbar-brand">Todos App</span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu"
+                aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item d-flex justify-content-end align-items-center">
+                    <span class="text-white px-2">Welcome, <strong>{{ current_login_user_lastname }}</strong></span>
+                </li>
+                <li class="nav-item mt-2 d-flex justify-content-end align-items-center">
+                    <a type="button" class="btn btn-outline-light text-white" onclick="logoutUser()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
