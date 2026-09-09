@@ -13,8 +13,10 @@ app = FastAPI()
 app.include_router(router.user_api.router)
 app.include_router(router.todos_api.router)
 app.include_router(router.user_web.router)
+app.include_router(router.todos_web.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 
 @app.get("/api/health_check")
