@@ -1,6 +1,5 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy import Row
-from starlette import status
 
 
 def status_response_error(status_code: int, response_message: str):
