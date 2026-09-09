@@ -178,11 +178,11 @@
             }
 
             const payload = {
-                email: userRegisterData.userEmail,
-                username: userRegisterData.userUsername,
-                first_name: userRegisterData.userFirstname,
-                last_name: userRegisterData.userLastname,
-                password: userRegisterData.userPassword
+                email: userRegisterData.email,
+                username: userRegisterData.username,
+                first_name: userRegisterData.firstname,
+                last_name: userRegisterData.lastname,
+                password: userRegisterData.password
             };
 
             try {
