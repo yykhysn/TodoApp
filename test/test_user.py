@@ -112,7 +112,7 @@ def test_login_user(add_test_data):
     assert response.status_code == 200
     response_json = response.json()
     assert response_json["token_type"] == "bearer"
-    access_token = response_json["access_token"]
+    access_token = response_json["user_access_token"]
     dependency_override = app.dependency_overrides.pop(validate_user_credential, None)
     assert validate_user_credential(access_token) == test_user_username
     if dependency_override is not None:

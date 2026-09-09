@@ -61,7 +61,6 @@ async def register_user(user_to_register: UsersRegisterSchema, db:db_dependency)
             status_response_error(400, f"Username already exists: {user_to_register.username}")
 
 
-
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()], db:db_dependency):
     user_to_login = db.query(Users).filter(Users.username == login_form.username).first()
@@ -72,7 +71,7 @@ async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]
     if not crypt_context.verify(login_form.password, str(user_to_login.hashed_password)):
         status_response_error(401, "Incorrect password")
     user_access_token = {"sub": user_to_login.username, "exp": datetime.now(timezone.utc) + token_expires_delta}
-    return {"access_token": jwt.encode(user_access_token, secret_key, jwt_algorithm), "token_type": "bearer"}
+    return {"user_access_token": jwt.encode(user_access_token, secret_key, jwt_algorithm), "token_type": "bearer"}
 
 
 @router.get("/info", status_code=status.HTTP_200_OK)
