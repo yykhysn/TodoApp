@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Request, status
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
 
 from database import Users, db_dependency
-from router.user_api import validate_user_credential
+from router.user_web import user_web_dependency
 
 
 router = APIRouter(prefix="/todos", tags=["Todos Pages"])

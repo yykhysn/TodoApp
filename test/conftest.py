@@ -5,7 +5,7 @@ import pytest
 from database import SessionLocal, get_db, Users, ToDoListTable
 from main import app
 from data_constraints.input_schema import UsersRegisterSchema, ToDosInputSchema
-from router.user_api import validate_user_credential, crypt_context
+from router.user_api import crypt_context, get_api_user
 
 
 @pytest.fixture
@@ -47,7 +47,7 @@ def add_test_data():
     def _override_user_dependency():
         return test_user.username
 
-    app.dependency_overrides[validate_user_credential] = _override_user_dependency
+    app.dependency_overrides[get_api_user] = _override_user_dependency
 
     test_todo = ToDosInputSchema(
         title="Pytest Auto Test Item",

@@ -25,7 +25,7 @@ jwt_algorithm = JWT_ALGORITHM
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 
 
-def validate_user_credential(token_to_validate: Annotated[str, Depends(oauth2_scheme)]):
+def validate_user_credential(token_to_validate: str):
     try:
         payload = jwt.decode(token_to_validate, secret_key, jwt_algorithm)
         username = payload.get("sub")
@@ -36,7 +36,11 @@ def validate_user_credential(token_to_validate: Annotated[str, Depends(oauth2_sc
     except JWTError:
         status_response_error(401, "Token is Invalid")
     return username
-user_dependency = Annotated[str, Depends(validate_user_credential)]
+
+def get_api_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    return validate_user_credential(token)
+
+user_api_dependency = Annotated[str, Depends(get_api_user)]
 
 
 
@@ -75,14 +79,14 @@ async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
 @router.get("/info", status_code=status.HTTP_200_OK)
-async def current_user_info(user: user_dependency, db:db_dependency):
+async def current_user_info(user: user_api_dependency, db:db_dependency):
     user_information = (db.query(Users.username, Users.first_name, Users.last_name, Users.email, Users.is_enabled).
                         filter(Users.username == user).first())
     return sql_result_to_dict(user_information)
 
 
 @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
-async def update_user(user: user_dependency, db:db_dependency, user_info: UsersUpdateSchema):
+async def update_user(user: user_api_dependency, db:db_dependency, user_info: UsersUpdateSchema):
     user_to_update = db.query(Users).filter(Users.username == user).first()
     user_info = user_info.model_dump(exclude_unset=True)
     if "new_password" in user_info.keys() and "old_password" in user_info.keys():
