@@ -150,7 +150,7 @@
                     // Delete any cookies available
                     // logout();
                     // Save token to cookie
-                    document.cookie = `user_access_token=${response_json.user_access_token}; path=/`;
+                    document.cookie = `user_access_token=${response_json.access_token}; path=/`;
                     window.location.href = '/todos/todo.html';
                 } else {
                     // Handle error
