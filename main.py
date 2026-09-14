@@ -17,6 +17,8 @@ app.include_router(router.todos_web.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+app.add_exception_handler(router.user_web.WebUnauthenticatedException, router.user_web.WebUnauthenticatedException.redirect_to_login)
+
 
 
 @app.get("/api/health_check")
