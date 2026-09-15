@@ -248,3 +248,88 @@
     function logoutUser() {
         window.location.href = '/user/redirectToLogin.html';
     }
+
+
+    // Sort Todos Table
+    let sortKey = "priority";
+    let sortOrder = "asc";
+
+    function sortTodosTable(key, order) {
+        const todosTbody = document.getElementById("todosTableBody");
+        const todosList = Array.from(todosTbody.querySelectorAll("tr"))
+
+        todosList.sort((todoTrA, todoTrB) => {
+            sortKey = key;
+            sortOrder = order;
+
+            const keyIndexMap = {
+                title: 1,
+                description: 2,
+                priority: 3,
+            };
+            const keyIndex = keyIndexMap[key];
+
+            let valA, valB, result;
+            if (key === "action") {
+                valA = !! todoTrA.querySelector("td.strike-through-td")
+                valB = !! todoTrB.querySelector("td.strike-through-td")
+                result = valA - valB
+            }else if (key === "priority") {
+                valA = Number(todoTrA.querySelectorAll("td")[keyIndex].textContent);
+                valB = Number(todoTrB.querySelectorAll("td")[keyIndex].textContent);
+                result = valA - valB;
+            }else {
+                valA = todoTrA.querySelectorAll("td")[keyIndex].textContent;
+                valB = todoTrB.querySelectorAll("td")[keyIndex].textContent;
+                result = valA.localeCompare(valB);
+            }
+
+            if (sortOrder === "desc"){
+                result = -result
+            }
+
+            return result;
+        })
+
+        todosList.forEach((todo) => {
+            todosTbody.append(todo);
+        });
+
+        updateSortArrow();
+        renderTodosTableRowNumber()
+    }
+
+    function updateSortArrow() {
+        document.querySelectorAll(".arrow-up, .arrow-down").forEach(arrow => {
+            arrow.classList.remove("active");
+        });
+
+        const activeArrow = document.querySelector('th[data-sort-key="' + sortKey +'"]');
+        const arrow = sortOrder === "asc" ? activeArrow.querySelector(".arrow-up") :
+            activeArrow.querySelector(".arrow-down");
+        arrow.classList.add("active");
+    }
+
+    document.querySelectorAll(".arrow-up, .arrow-down").forEach(arrow => {
+        arrow.addEventListener("click", () => {
+            const th = arrow.closest("th");
+            const key = th.getAttribute("data-sort-key")
+            const order = arrow.getAttribute("data-sort-order");
+            sortTodosTable(key, order);
+        })
+    })
+
+
+    // Render Todos Table Row Number
+    function renderTodosTableRowNumber(){
+        const todosTbody = document.getElementById("todosTableBody");
+
+        const todosTrs = Array.from(todosTbody.querySelectorAll("tr"));
+        todosTrs.forEach((tr, index) => {
+            tr.querySelector("td:nth-child(1)").textContent = String(index+1);
+        })
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderTodosTableRowNumber()
+    })
