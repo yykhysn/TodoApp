@@ -64,6 +64,7 @@ def update_todos(db: db_dependency, user:user_api_dependency,
 @router.get("/getAll", status_code=status.HTTP_200_OK)
 def get_all_todos(db: db_dependency, user: user_api_dependency):
     todos_result = (db.query(ToDoListTable.title, ToDoListTable.description, ToDoListTable.priority,
-                            ToDoListTable.is_completed, ToDoListTable.public_uuid).
-                    join(Users, Users.id == ToDoListTable.owner_user_id).filter(Users.username == user).all())
+                             ToDoListTable.is_completed, ToDoListTable.public_uuid)
+                    .join(Users, Users.id == ToDoListTable.owner_user_id).filter(Users.username == user)
+                    .order_by(ToDoListTable.is_completed.asc(), ToDoListTable.priority.asc()).all())
     return sql_result_to_dict(todos_result)
