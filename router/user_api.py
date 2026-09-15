@@ -30,11 +30,11 @@ def validate_user_credential(token_to_validate: str):
         payload = jwt.decode(token_to_validate, secret_key, jwt_algorithm)
         username = payload.get("sub")
         if username is None:
-            status_response_error(401, "Token is Invalid")
+            status_response_error(401, "User access token is invalid")
     except ExpiredSignatureError:
-        status_response_error(401, "Token has expired")
+        status_response_error(401, "User access token has expired")
     except JWTError:
-        status_response_error(401, "Token is Invalid")
+        status_response_error(401, "User access token is invalid")
     return username
 
 def get_api_user(token: Annotated[str, Depends(oauth2_scheme)]):
