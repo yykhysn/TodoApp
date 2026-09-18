@@ -4,16 +4,16 @@ from starlette import status
 
 from database import ToDoListTable, Users, db_dependency
 from data_constraints.input_schema import ToDosInputSchema
-from router.user import user_dependency
+from router.user_api import user_api_dependency
 from utils import sql_result_to_dict, status_response_error
 from data_constraints.constants import *
 
 
-router = APIRouter(prefix="/todos", tags=["Todos"])
+router = APIRouter(prefix="/api/todos", tags=["Todos API"])
 
 
 @router.get("/search", status_code=status.HTTP_200_OK)
-def search_todos(db: db_dependency, user:user_dependency,
+def search_todos(db: db_dependency, user:user_api_dependency,
                  priority: Optional[int] = Query(ge=TODOS_PRIORITY_MIN, le=TODOS_PRIORITY_MAX, default=None),
                  title: Optional[str] = Query(max_length=TODOS_TITLE_MAX_LEN, default=None),
                  description: Optional[str] = Query(max_length=TODOS_DESC_MAX_LEN, default=None),
@@ -32,14 +32,14 @@ def search_todos(db: db_dependency, user:user_dependency,
     return sql_result_to_dict(query.all())
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
-def create_todos(user: user_dependency, db: db_dependency, new_todo: ToDosInputSchema):
+def create_todos(user: user_api_dependency, db: db_dependency, new_todo: ToDosInputSchema):
     user_id = db.query(Users).filter(Users.username == user).first().id
     new_todo = ToDoListTable(**new_todo.model_dump(), owner_user_id=user_id)
     db.add(new_todo)
-    return f"Success! {new_todo.title}'s todo has been created!"
-
+    db.flush()
+    return {"detail": f"{new_todo.title}'s Todo created successfully"}
 @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
-def update_todos(db: db_dependency, user:user_dependency,
+def update_todos(db: db_dependency, user:user_api_dependency,
                  public_uuid: str = Query(min_length=TODOS_PUBLIC_UUID_LENGTH, max_length=TODOS_PUBLIC_UUID_LENGTH),
                  priority: Optional[int] = Query(ge=TODOS_PRIORITY_MIN, le=TODOS_PRIORITY_MAX, default=None),
                  title: Optional[str] = Query(max_length=TODOS_TITLE_MAX_LEN, default=None),
@@ -58,10 +58,12 @@ def update_todos(db: db_dependency, user:user_dependency,
     if is_completed is not None:
         record_to_update.is_completed = is_completed
     db.add(record_to_update)
+    db.flush()
 
 @router.get("/getAll", status_code=status.HTTP_200_OK)
-def get_all_todos(db: db_dependency, user: user_dependency):
+def get_all_todos(db: db_dependency, user: user_api_dependency):
     todos_result = (db.query(ToDoListTable.title, ToDoListTable.description, ToDoListTable.priority,
-                            ToDoListTable.is_completed, ToDoListTable.public_uuid).
-                    join(Users, Users.id == ToDoListTable.owner_user_id).filter(Users.username == user).all())
+                             ToDoListTable.is_completed, ToDoListTable.public_uuid)
+                    .join(Users, Users.id == ToDoListTable.owner_user_id).filter(Users.username == user)
+                    .order_by(ToDoListTable.is_completed.asc(), ToDoListTable.priority.asc()).all())
     return sql_result_to_dict(todos_result)

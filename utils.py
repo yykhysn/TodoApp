@@ -1,10 +1,10 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy import Row
-from starlette import status
 
 
 def status_response_error(status_code: int, response_message: str):
     match status_code:
+        case 400: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=response_message)
         case 401: raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=response_message)
         case 404: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=response_message)
 

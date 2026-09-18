@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TodoApp</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+</head>
+<body>
+    {% include "navbar.html" %}
+    <div class="container">
+        <div class="card">
+            <div class="card-header text-center">Add a new todo</div>
+            <div class="card-body">
+                <form id="addTodoForm">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input class="form-control" type="text" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" type="text" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select class="form-control" name="priority">
+                            <option disabled selected>please select a priority</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Is Completed</label>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-outline-primary active is-completed-btn-wide">
+                                <input type="radio" checked="checked" name="is_completed" value="false" autocomplete="off">No
+                            </label>
+                            <label class="btn btn-outline-primary is-completed-btn-wide">
+                                <input type="radio" name="is_completed" value="true" autocomplete="off">Yes
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <a href="todo.html" class="btn btn-danger">Back</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/jquery-slim.js"></script>
+    <script src="/static/js/popper.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <script src="/static/js/base.js"></script>
+</body>
+</html>

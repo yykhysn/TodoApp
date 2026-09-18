@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TodoApp</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+</head>
+<body data-page="todo">
+    {% include "navbar.html" %}
+    <div class="container">
+        <div class="card text-center">
+            <div class="card-header">Your Todo's</div>
+            <div class="card-body">
+                <h5 class="card-title">List of your todo's!</h5>
+                <p class="card-text">Information regarding stuff that needs to be completed</p>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col" data-sort-key="title">Title
+                                <span class="arrow-up" data-sort-order="asc">▲</span>
+                                <span class="arrow-down" data-sort-order="desc">▼</span>
+                            </th>
+                            <th scope="col" data-sort-key="description">Description
+                                <span class="arrow-up" data-sort-order="asc">▲</span>
+                                <span class="arrow-down" data-sort-order="desc">▼</span>
+                            </th>
+                            <th scope="col" data-sort-key="priority">Priority
+                                <span class="arrow-up" data-sort-order="asc">▲</span>
+                                <span class="arrow-down" data-sort-order="desc">▼</span>
+                            </th>
+                            <th scope="col" data-sort-key="action">Action
+                                <span class="arrow-up" data-sort-order="asc">▲</span>
+                                <span class="arrow-down" data-sort-order="desc">▼</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="todosTableBody">
+                        {% for todo in current_login_user_todos %}
+                        {% if todo.is_completed == False %}
+                        <tr data-todo-public-uuid = "{{todo.public_uuid}}">
+                            <td></td>
+                            <td>{{todo.title}}</td>
+                            <td>{{todo.description}}</td>
+                            <td>{{todo.priority}}</td>
+                            <td>
+                                <button type="button" class="btn btn-info">Edit</button>
+                                <button type="button" class="btn btn-info">Complete</button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr data-todo-public-uuid = "{{todo.public_uuid}}" class="alert alert-success">
+                            <td class="strike-through-td"></td>
+                            <td class="strike-through-td">{{todo.title}}</td>
+                            <td class="strike-through-td">{{todo.description}}</td>
+                            <td class="strike-through-td">{{todo.priority}}</td>
+                            <td>
+                                <button type="button" class="btn btn-info">Edit</button>
+                                <button type="button" class="btn btn-info">Reopen</button>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="addTodo.html" class="btn btn-primary">Add a new todo</a>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/jquery-slim.js"></script>
+    <script src="/static/js/popper.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <script src="/static/js/base.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+body {
+  background: #fafafa;
+  color: #33333a;
+  padding-top: 70px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #323232;
+}
+
+.main-color {
+  background-color: #0e76a8 ;
+}
+
+.strike-through-td {
+    text-decoration: line-through;
+}
+
+.arrow-up, .arrow-down {
+    cursor: pointer;
+    color: #aaa;
+    user-select: none;
+    transition: font-size 0.2s ease;
+}
+.arrow-up:hover, .arrow-down:hover {
+    color: #555;
+    font-size: 1.4rem;
+}
+.arrow-up.active, .arrow-down.active {
+    color: #0d6efd;
+    font-size: 1.4rem;
+}
+
+.is-completed-btn-wide {
+  width: 100px;
+}

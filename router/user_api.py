@@ -5,35 +5,42 @@ from jose import jwt, JWTError, ExpiredSignatureError
 from passlib.context import CryptContext
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from sqlalchemy.exc import IntegrityError
 from starlette import status
 
 from data_constraints.input_schema import UsersRegisterSchema, UsersUpdateSchema
 from database import db_dependency, Users
 from utils import status_response_error, sql_result_to_dict
+from data_constraints.constants import *
 
-router = APIRouter(prefix="/user", tags=["User"])
+
+router = APIRouter(prefix="/api/user", tags=["User API"])
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-token_expires_delta = timedelta(minutes=30)
-secret_key = "secret"
-jwt_algorithm = "HS256"
+token_expires_delta = timedelta(minutes=TOKEN_EXPIRES_MINUTES)
+secret_key = SECRET_KEY
+jwt_algorithm = JWT_ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 
 
-def validate_user_credential(token_to_validate: Annotated[str, Depends(oauth2_scheme)]):
+def validate_user_credential(token_to_validate: str):
     try:
         payload = jwt.decode(token_to_validate, secret_key, jwt_algorithm)
         username = payload.get("sub")
         if username is None:
-            status_response_error(401, "Token is Invalid")
+            status_response_error(401, "User access token is invalid")
     except ExpiredSignatureError:
-        status_response_error(401, "Token has expired")
+        status_response_error(401, "User access token has expired")
     except JWTError:
-        status_response_error(401, "Token is Invalid")
+        status_response_error(401, "User access token is invalid")
     return username
-user_dependency = Annotated[str, Depends(validate_user_credential)]
+
+def get_api_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    return validate_user_credential(token)
+
+user_api_dependency = Annotated[str, Depends(get_api_user)]
 
 
 
@@ -47,6 +54,15 @@ async def register_user(user_to_register: UsersRegisterSchema, db:db_dependency)
         hashed_password=crypt_context.hash(user_to_register.password),
     )
     db.add(user_to_register)
+    try:
+        db.flush()
+    except IntegrityError as e:
+        db.rollback()
+        error_msg = str(e.orig)
+        if "UNIQUE constraint failed: Users.email" == error_msg:
+            status_response_error(400, f"Email already exists: {user_to_register.email}")
+        if "UNIQUE constraint failed: Users.username" == error_msg:
+            status_response_error(400, f"Username already exists: {user_to_register.username}")
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
@@ -63,14 +79,14 @@ async def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
 @router.get("/info", status_code=status.HTTP_200_OK)
-async def current_user_info(user: user_dependency, db:db_dependency):
+async def current_user_info(user: user_api_dependency, db:db_dependency):
     user_information = (db.query(Users.username, Users.first_name, Users.last_name, Users.email, Users.is_enabled).
                         filter(Users.username == user).first())
     return sql_result_to_dict(user_information)
 
 
 @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
-async def update_user(user: user_dependency, db:db_dependency, user_info: UsersUpdateSchema):
+async def update_user(user: user_api_dependency, db:db_dependency, user_info: UsersUpdateSchema):
     user_to_update = db.query(Users).filter(Users.username == user).first()
     user_info = user_info.model_dump(exclude_unset=True)
     if "new_password" in user_info.keys() and "old_password" in user_info.keys():
@@ -83,3 +99,4 @@ async def update_user(user: user_dependency, db:db_dependency, user_info: UsersU
     for k, v in user_info.items():
         setattr(user_to_update, k, v)
     db.add(user_to_update)
+    db.flush()

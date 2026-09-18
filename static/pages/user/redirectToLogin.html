@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TodoApp</title>
+</head>
+<body>
+<script>
+    alert("Your login session has expired. Please log in again to proceed")
+    document.cookie = "user_access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+    window.location.href = "login.html"
+</script>
+</body>
+</html>
