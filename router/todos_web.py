@@ -18,3 +18,8 @@ def todo_page(request: Request, user: user_web_dependency, db: db_dependency):
     return templates.TemplateResponse(request, "/todos/todo.html",
                                       {"current_login_user_lastname": current_login_user_lastname,
                                        "current_login_user_todos": current_login_user_todos})
+
+@router.get("/addTodo.html")
+def add_todo_page(request: Request, user: user_web_dependency, db: db_dependency):
+    current_login_user_lastname = db.query(Users).filter(Users.username == user).first().last_name
+    return templates.TemplateResponse(request, "/todos/addTodo.html", {"current_login_user_lastname": current_login_user_lastname})

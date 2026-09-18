@@ -30,3 +30,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #0d6efd;
     font-size: 1.4rem;
 }
+
+.is-completed-btn-wide {
+  width: 100px;
+}

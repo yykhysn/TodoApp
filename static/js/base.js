@@ -1,43 +1,45 @@
-    // // Add Todo JS
-    // const todoForm = document.getElementById('todoForm');
-    // if (todoForm) {
-    //     todoForm.addEventListener('submit', async function (event) {
-    //         event.preventDefault();
-    //
-    //         const form = event.target;
-    //         const formData = new FormData(form);
-    //         const data = Object.fromEntries(formData.entries());
-    //
-    //         const payload = {
-    //             title: data.title,
-    //             description: data.description,
-    //             priority: parseInt(data.priority),
-    //             complete: false
-    //         };
-    //
-    //         try {
-    //             const response = await fetch('/todos/todo', {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                     'Authorization': `Bearer ${getCookie('access_token')}`
-    //                 },
-    //                 body: JSON.stringify(payload)
-    //             });
-    //
-    //             if (response.ok) {
-    //                 form.reset(); // Clear the form
-    //             } else {
-    //                 // Handle error
-    //                 const errorData = await response.json();
-    //                 alert(`Error: ${errorData.detail}`);
-    //             }
-    //         } catch (error) {
-    //             console.error('Error:', error);
-    //             alert('An error occurred. Please try again.');
-    //         }
-    //     });
-    // }
+    // Add Todo
+    const addTodoForm = document.getElementById('addTodoForm');
+    if (addTodoForm) {
+        addTodoForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const payload = {
+                title: data.title,
+                description: data.description,
+                priority: parseInt(data.priority),
+                complete: data.is_completed === "true",
+            };
+
+            try {
+                const response = await fetch('/api/todos/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getUserAccessToken()}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const response_json = await response.json();
+                    alert(response_json.detail);
+                    form.reset(); // Clear the form
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.detail}`);
+                }
+            } catch (error) {
+                console.error('Add Todo Error:', error);
+                alert(`An error occurred. Please try again: ${error.message}`);
+            }
+        });
+    }
     //
     // // Edit Todo JS
     // const editTodoForm = document.getElementById('editTodoForm');
@@ -225,7 +227,14 @@
     }
 
 
-
+    function getUserAccessToken() {
+        const cookies = "; " + document.cookie;
+        const cookies_part = cookies.split('; user_access_token=');
+        if (cookies_part.length === 2){
+            return cookies_part.pop().split(';').shift();
+        }
+        window.location.href = '/user/redirectToLogin.html'
+    }
 
 
     // // Helper function to get a cookie by name
