@@ -331,5 +331,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        renderTodosTableRowNumber()
+        if (document.body.dataset.page === "todo"){
+            renderTodosTableRowNumber()
+        }
     })
