@@ -133,9 +133,6 @@
 
             const userLoginData = new FormData(event.target)
             const payload = new URLSearchParams(userLoginData);
-            // for (const [key, value] of userLoginData.entries()) {
-            //     payload.append(key, value);
-            // }
 
             try {
                 const response = await fetch('/api/user/login', {
@@ -148,14 +145,9 @@
                 const response_json = await response.json();
 
                 if (response.ok) {
-                    // Handle success (e.g., redirect to dashboard)
-                    // Delete any cookies available
-                    // logout();
-                    // Save token to cookie
                     document.cookie = `user_access_token=${response_json.access_token}; path=/`;
                     window.location.href = '/todos/todo.html';
                 } else {
-                    // Handle error
                     alert(`Error: ${response_json.detail}`);
                 }
             } catch (error) {
@@ -164,6 +156,7 @@
             }
         });
     }
+
 
     // User Registration
     const userRegisterForm = document.getElementById('registerUserForm');
