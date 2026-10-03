@@ -1,10 +1,11 @@
+import time
 from random import randint
 
 import pytest
 from fastapi.testclient import TestClient
 
 from main import app
-from data_constraints.input_schema import ToDosInputSchema
+from data_constraints.input_schema import ToDosCreateSchema
 from database import ToDoListTable
 
 
@@ -13,7 +14,7 @@ client = TestClient(app)
 
 @pytest.fixture
 def sample_todo():
-    return ToDosInputSchema(
+    return ToDosCreateSchema(
         title="PytestTestTodoTitle",
         description="PytestTestTodoDescription",
         priority=2,
@@ -89,50 +90,29 @@ def test_search_todo():
                           "priority": priority_search_parameter, "is_completed": is_completed_search_parameter})
 
 
-def test_update_todo(add_test_data, test_db):
-    def test_update_todo_field(update_todo_parameters):
-        todo_to_update_public_uuid = add_test_data["test_todo_public_uuid"]
-        update_todo_parameters["public_uuid"] = todo_to_update_public_uuid
-        response = client.put("/api/todos/update", params=update_todo_parameters)
-        assert response.status_code == 204, f"Update request failed with params: {update_todo_parameters}"
-        updated_todo_item_in_db = test_db.query(ToDoListTable).filter(ToDoListTable.public_uuid == todo_to_update_public_uuid).first()
-        for field_to_update, value_to_update in update_todo_parameters.items():
-            assert value_to_update == getattr(updated_todo_item_in_db, field_to_update), \
-                (f"{field_to_update} mismatch, Excepted: {value_to_update}, Actual:{getattr(updated_todo_item_in_db, field_to_update)}\n"
-                 + f"Update request failed with params: {update_todo_parameters}")
-
-    priority_to_update = randint(2, 4)
-    title_to_update = "Todo Test Item Title Updated"
-    description_to_update = "Todo Test Item Description Updated"
-    is_completed_to_update = True
-
-    # ========== Pre‑built all 15 update parameter combinations ==========
-    all_update_cases = [
-        # 1. Single‑parameter update (4 cases)
-        {"title": title_to_update},
-        {"description": description_to_update},
-        {"priority": priority_to_update},
-        {"is_completed": is_completed_to_update},
-        # 2. Two‑parameter combinations (6 cases)
-        {"title": title_to_update, "description": description_to_update},
-        {"title": title_to_update, "priority": priority_to_update},
-        {"title": title_to_update, "is_completed": is_completed_to_update},
-        {"description": description_to_update, "priority": priority_to_update},
-        {"description": description_to_update, "is_completed": is_completed_to_update},
-        {"priority": priority_to_update, "is_completed": is_completed_to_update},
-        # 3. Three‑parameter combinations (4 cases)
-        {"title": title_to_update, "description": description_to_update, "priority": priority_to_update},
-        {"title": title_to_update, "description": description_to_update, "is_completed": is_completed_to_update},
-        {"title": title_to_update, "priority": priority_to_update, "is_completed": is_completed_to_update},
-        {"description": description_to_update, "priority": priority_to_update, "is_completed": is_completed_to_update},
-        # 4. All four parameters combined (1 case)
-        {
-            "title": title_to_update,
-            "description": description_to_update,
-            "priority": priority_to_update,
-            "is_completed": is_completed_to_update
+def test_update_todo(add_test_data):
+    updated_todo_data =  {
+            "title": "Todo Test Item Title Updated",
+            "description": "Todo Test Item Description Updated",
+            "priority": randint(1, 5),
+            "is_completed": True
         }
-    ]
 
-    for case in all_update_cases:
-        test_update_todo_field(case)
+    response = client.put("/api/todos/update", params={"todo_public_uuid": add_test_data["test_todo_public_uuid"]},
+                          json=updated_todo_data)
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "code": 0,
+        "message": "Todo updated successfully",
+        "data": {
+            "before": {
+                "title": "Pytest Auto Test Item",
+                "description": "Test if the app can get this test todo item",
+                "priority": 1,
+                "is_completed": False
+            },
+            "after": updated_todo_data
+        },
+        "timestamp": int(time.time())
+    }
