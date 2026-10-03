@@ -5,11 +5,18 @@ from pydantic import BaseModel, Field
 from data_constraints.constants import *
 
 
-class ToDosInputSchema(BaseModel):
+class ToDosCreateSchema(BaseModel):
     title: str = Field(max_length=TODOS_TITLE_MAX_LEN)
     description: str = Field(max_length=TODOS_DESC_MAX_LEN)
     priority: int = Field(ge=TODOS_PRIORITY_MIN, le=TODOS_PRIORITY_MAX)
     is_completed: bool = Field(default=TODOS_COMPLETED_DEFAULT)
+
+
+class ToDosUpdateSchema(BaseModel):
+    title: Optional[str] = Field(max_length=TODOS_TITLE_MAX_LEN, default=None)
+    description: Optional[str] = Field(max_length=TODOS_DESC_MAX_LEN, default=None)
+    priority: Optional[int] = Field(ge=TODOS_PRIORITY_MIN, le=TODOS_PRIORITY_MAX, default=None)
+    is_completed: Optional[bool] = Field(default=None)
 
 
 class UsersRegisterSchema(BaseModel):
