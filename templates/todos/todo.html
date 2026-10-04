@@ -9,6 +9,7 @@
 </head>
 <body data-page="todo">
     {% include "navbar.html" %}
+    {% set todo_priority_map = { 1: "High", 2: "Medium High", 3: "Medium", 4: "Medium Low", 5: "Low"} %}
     <div class="container">
         <div class="card text-center">
             <div class="card-header">Your Todo's</div>
@@ -44,9 +45,9 @@
                             <td></td>
                             <td>{{todo.title}}</td>
                             <td>{{todo.description}}</td>
-                            <td>{{todo.priority}}</td>
+                            <td data-todo-priority="{{todo.priority}}">{{todo_priority_map[todo.priority]}}</td>
                             <td>
-                                <button type="button" class="btn btn-info">Edit</button>
+                                <button type="button" class="btn btn-info btn-edit-todo">Edit</button>
                                 <button type="button" class="btn btn-info">Complete</button>
                             </td>
                         </tr>
@@ -55,9 +56,9 @@
                             <td class="strike-through-td"></td>
                             <td class="strike-through-td">{{todo.title}}</td>
                             <td class="strike-through-td">{{todo.description}}</td>
-                            <td class="strike-through-td">{{todo.priority}}</td>
+                            <td class="strike-through-td" data-todo-priority="{{todo.priority}}">{{todo_priority_map[todo.priority]}}</td>
                             <td>
-                                <button type="button" class="btn btn-info">Edit</button>
+                                <button type="button" class="btn btn-info btn-edit-todo">Edit</button>
                                 <button type="button" class="btn btn-info">Reopen</button>
                             </td>
                         </tr>
