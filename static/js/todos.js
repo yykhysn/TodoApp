@@ -70,6 +70,8 @@ todoTableBody.addEventListener('click', function (event) {
         resetEditingTodo(todoRow)
     }else if (event.target.classList.contains('btn-edit-cancel-todo')){
         exitTodoEdit(todoRow, 'Cancel');
+    }else if (event.target.classList.contains('btn-edit-delete-todo')){
+        deleteTodo(todoRow, "Delete");
     }
 })
 
@@ -134,6 +136,9 @@ function exitTodoEdit(todoEditRow, exitMode, todoNewValue) {
         case 'Cancel':
             todoValue = editingRowOriginalValue;
             break;
+        case 'Delete':
+            todoEditRow.remove();
+            return;
     }
 
     todoEditRow.classList.remove('editing-todo-tr');
@@ -215,9 +220,43 @@ async function saveEditedTodo(editedRow){
 }
 
 
+async function deleteTodo(editedRow) {
+    const confirmDeleteTodo = window.confirm('Are you sure that you want to delete this todo item? Once deleted, it can not be recovered');
+    if (!confirmDeleteTodo) {
+        return;
+    }
+
+    const todoUpdateParams = new URLSearchParams();
+    todoUpdateParams.set('todo_public_uuid', editedRow.dataset.todoPublicUuid);
+
+    try {
+            const response = await fetch(`/api/todos/deleteTodo?${todoUpdateParams}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getUserAccessToken()}`
+                },
+            });
+            const responseJson = await response.json();
+
+            if (response.ok) {
+                alert(responseJson.message);
+                exitTodoEdit(editedRow, "Delete");
+                renderTodosTableRowNumber()
+            } else {
+                // Handle error
+                alert(`Error: ${responseJson.detail}`)
+            }
+    } catch (error) {
+            console.error('Add Todo Error:', error);
+            alert(`An error occurred. Please try again: ${error.message}`);
+    }
+}
+
 
 
 // Sort Todos Table
+
 let sortKey = "priority";
 let sortOrder = "asc";
 
