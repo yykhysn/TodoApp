@@ -4,7 +4,7 @@ import pytest
 
 from database import SessionLocal, get_db, Users, ToDoListTable
 from main import app
-from data_constraints.input_schema import UsersRegisterSchema, ToDosInputSchema
+from data_constraints.input_schema import UsersRegisterSchema, ToDosCreateSchema
 from router.user_api import crypt_context, get_api_user
 
 
@@ -49,7 +49,7 @@ def add_test_data():
 
     app.dependency_overrides[get_api_user] = _override_user_dependency
 
-    test_todo = ToDosInputSchema(
+    test_todo = ToDosCreateSchema(
         title="Pytest Auto Test Item",
         description="Test if the app can get this test todo item",
         priority=1,
