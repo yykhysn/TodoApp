@@ -25,21 +25,21 @@
                         <label>Priority</label>
                         <select class="form-control" name="priority">
                             <option disabled selected>please select a priority</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
+                            <option value="1">High</option>
+                            <option value="2">Medium High</option>
+                            <option value="3">Medium</option>
+                            <option value="4">Medium Low</option>
+                            <option value="5">Low</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Is Completed</label>
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label class="btn btn-outline-primary active is-completed-btn-wide">
-                                <input type="radio" checked="checked" name="is_completed" value="false" autocomplete="off">No
+                                <input type="radio" checked="checked" name="is_todo_completed" value="false" autocomplete="off">No
                             </label>
                             <label class="btn btn-outline-primary is-completed-btn-wide">
-                                <input type="radio" name="is_completed" value="true" autocomplete="off">Yes
+                                <input type="radio" name="is_todo_completed" value="true" autocomplete="off">Yes
                             </label>
                         </div>
                     </div>
