@@ -14,8 +14,16 @@
         <div class="card text-center">
             <div class="card-header">Your Todo's</div>
             <div class="card-body">
-                <h5 class="card-title">List of your todo's!</h5>
-                <p class="card-text">Information regarding stuff that needs to be completed</p>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="flex-grow-1"></div>
+                    <div class="flex-grow-1 text-center">
+                        <h5 class="card-title mb-1">List of your todo's!</h5>
+                        <p class="card-text mb-0">Information regarding stuff that needs to be completed</p>
+                    </div>
+                    <div class="flex-grow-1 d-flex justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary btn-todos-reload">↻</button>
+                    </div>
+                </div>
                 <table class="table table-hover">
                     <thead>
                         <tr>

@@ -376,8 +376,19 @@ function renderTodosTableRowNumber(){
     })
 }
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     if (document.body.dataset.page === "todo"){
-        renderTodosTableRowNumber()
+        renderTodosTableRowNumber();
+
+        const reloadTodosButton = document.querySelector(".btn-todos-reload");
+        reloadTodosButton.addEventListener("click", () => {
+            if (editingRow){
+                alert("Please finish editing before reload!");
+            }else {
+                window.location.reload(true);
+            }
+        })
     }
 })
