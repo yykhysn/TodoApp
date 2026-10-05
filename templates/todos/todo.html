@@ -48,7 +48,7 @@
                             <td data-todo-priority="{{todo.priority}}">{{todo_priority_map[todo.priority]}}</td>
                             <td>
                                 <button type="button" class="btn btn-info btn-edit-todo">Edit</button>
-                                <button type="button" class="btn btn-info">Complete</button>
+                                <button type="button" class="btn btn-info btn-complete-todo">Complete</button>
                             </td>
                         </tr>
                         {% else %}
@@ -59,7 +59,7 @@
                             <td class="strike-through-td" data-todo-priority="{{todo.priority}}">{{todo_priority_map[todo.priority]}}</td>
                             <td>
                                 <button type="button" class="btn btn-info btn-edit-todo">Edit</button>
-                                <button type="button" class="btn btn-info">Reopen</button>
+                                <button type="button" class="btn btn-info btn-reopen-todo">Reopen</button>
                             </td>
                         </tr>
                         {% endif %}

@@ -72,6 +72,10 @@ todoTableBody.addEventListener('click', function (event) {
         exitTodoEdit(todoRow, 'Cancel');
     }else if (event.target.classList.contains('btn-edit-delete-todo')){
         deleteTodo(todoRow, "Delete");
+    }else if (event.target.classList.contains('btn-complete-todo')){
+        setTodoCompletion(todoRow, true);
+    }else if (event.target.classList.contains('btn-reopen-todo')){
+        setTodoCompletion(todoRow, false);
     }
 })
 
@@ -160,11 +164,17 @@ function exitTodoEdit(todoEditRow, exitMode, todoNewValue) {
         todoTds.forEach((todoTd) => todoTd.classList.remove('strike-through-td'));
     }
 
-    const actionButtonText = todoValue.is_completed? 'Reopen':'Complete';
-    todoTds[4].innerHTML = `
+    if (todoValue.is_completed) {
+        todoTds[4].innerHTML = `
         <button type="button" class="btn btn-info btn-edit-todo">Edit</button>
-        <button type="button" class="btn btn-info">${actionButtonText}</button>
+        <button type="button" class="btn btn-info btn-reopen-todo">Reopen</button>
     `;
+    }else {
+        todoTds[4].innerHTML = `
+        <button type="button" class="btn btn-info btn-edit-todo">Edit</button>
+        <button type="button" class="btn btn-info btn-complete-todo">Complete</button>
+    `;
+    }
 
     editingRow = null;
     editingRowOriginalValue = {};
@@ -250,6 +260,35 @@ async function deleteTodo(editedRow) {
     } catch (error) {
             console.error('Add Todo Error:', error);
             alert(`An error occurred. Please try again: ${error.message}`);
+    }
+}
+
+
+async function setTodoCompletion(rowToSetCompletion, completionToSet) {
+    const todoUpdateParams = new URLSearchParams();
+    todoUpdateParams.set('todo_public_uuid', rowToSetCompletion.dataset.todoPublicUuid);
+
+    try {
+        const response = await fetch(`/api/todos/update?${todoUpdateParams}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getUserAccessToken()}`
+            },
+            body: JSON.stringify({is_completed: completionToSet})
+        });
+        const responseJson = await response.json();
+
+        if (response.ok) {
+            alert(responseJson.message);
+            exitTodoEdit(rowToSetCompletion, "Save",  responseJson.data.after);
+        } else {
+            // Handle error
+            alert(`Error: ${responseJson.detail}`)
+        }
+    } catch (error) {
+        console.error('Add Todo Error:', error);
+        alert(`An error occurred. Please try again: ${error.message}`);
     }
 }
 
