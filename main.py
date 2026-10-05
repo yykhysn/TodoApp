@@ -2,7 +2,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 
 import router.user_api, router.todos_api, router.user_web, router.todos_web
 from utils import *
@@ -19,6 +19,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_exception_handler(router.user_web.WebUnauthenticatedException, router.user_web.WebUnauthenticatedException.redirect_to_login)
 
+
+
+@app.get("/")
+async def index_root_page():
+    return RedirectResponse("/todos/todo.html", status_code=status.HTTP_302_FOUND)
 
 
 @app.get("/api/health_check")
