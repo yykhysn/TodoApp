@@ -26,6 +26,7 @@ async def index_root_page():
     return RedirectResponse("/todos/todo.html", status_code=status.HTTP_302_FOUND)
 
 
+@app.head("/api/health_check")
 @app.get("/api/health_check")
 async def health_check():
     return {"status": "ok"}
